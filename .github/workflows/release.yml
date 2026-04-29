@@ -1,0 +1,78 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK (for d8)
+        uses: android-actions/setup-android@v3
+        with:
+          packages: "build-tools;35.0.0"
+
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build patcher v22 from source to mavenLocal
+        # Patcher v22 isn't on any public Maven (registry stops at v21.1.0-dev.5).
+        # Compile against v22 from source so bytecodePatch returns Patch (not the
+        # v21 BytecodePatch class, which Manager v2.5.x doesn't have).
+        # Strip GPG signing — CI has no key, this artefact is consumed locally.
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git clone --depth 1 https://github.com/revanced/revanced-patcher.git "$RUNNER_TEMP/rv-patcher"
+          cd "$RUNNER_TEMP/rv-patcher"
+          sed -i 's/^version = .*/version = 22.0.1-SNAPSHOT/' gradle.properties
+          sed -i '/signAllPublications()/d; /useGpgCmd()/d' patcher/build.gradle.kts
+          ./gradlew :patcher:publishJvmPublicationToMavenLocal --no-daemon \
+              -PgithubPackagesUsername="$GITHUB_ACTOR" \
+              -PgithubPackagesPassword="$GITHUB_TOKEN"
+
+      - name: Build patch bundle
+        run: ./gradlew buildPatchBundle --no-daemon
+
+      - name: Generate manifest.json + unversioned alias
+        # ReVanced Manager's JsonSource expects {download_url, description,
+        # version, created_at} with a naive (no-Z) LocalDateTime.
+        run: |
+          cp build/libs/pepper-patches-*.rvp build/libs/pepper-patches.rvp
+          VERSION="${GITHUB_REF_NAME#v}"
+          NOW=$(date -u +"%Y-%m-%dT%H:%M:%S")
+          cat > build/libs/manifest.json << EOF
+          {
+            "download_url": "https://github.com/${{ github.repository }}/releases/latest/download/pepper-patches.rvp",
+            "description": "Pepper PL ReVanced Patches",
+            "version": "$VERSION",
+            "created_at": "$NOW"
+          }
+          EOF
+          cat build/libs/manifest.json
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/libs/pepper-patches-*.rvp
+            build/libs/pepper-patches.rvp
+            build/libs/manifest.json
+          generate_release_notes: true

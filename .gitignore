@@ -1,0 +1,17 @@
+.gradle/
+build/
+out/
+.idea/
+*.iml
+local.properties
+gradle.properties
+.kotlin/
+
+# Build artifacts that should never be committed
+*.apk
+*.idsig
+*.keystore
+
+# OS junk
+.DS_Store
+Thumbs.db
