@@ -62,8 +62,17 @@ val unlockTierIconsPatch = bytecodePatch(
             .mapNotNull { it.reference as? FieldReference }
             .filter { it.definingClass == it.type }
             .groupBy { it.definingClass }
+            // EXACT-match {c,d,e,f}: in v8.12.00 the picker dispatcher also
+            // references neighbouring enum classes that share the {c,d,e,f}
+            // prefix but extend further (Lh25; with c..j, ManifestAliasId
+            // with c..o, etc.). containsAll would match those too, rewriting
+            // their d/e/f → c references — corrupting unrelated enum reads
+            // (e.g. ManifestAliasId mappings, breaking the icon-to-launcher-
+            // alias relation). vsc has exactly four self-typed constants
+            // (c=DEFAULT, d=SILVER, e=GOLD, f=PLATINUM) — the equality check
+            // pins us to that shape.
             .filterValues { fields ->
-                fields.map { it.name }.toSet().containsAll(setOf("c", "d", "e", "f"))
+                fields.map { it.name }.toSet() == setOf("c", "d", "e", "f")
             }
             .keys
 
