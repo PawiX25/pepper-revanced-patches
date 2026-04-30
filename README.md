@@ -4,7 +4,7 @@ Unofficial [ReVanced](https://revanced.app/) patch bundle for the entire
 **Pepper.com Group / TippingCanoe** family of regional deal-aggregator apps.
 
 Tested on **v8.12.00** — verified that all fingerprint strings match identically
-across every sister app, so the same 5 patches apply to all of them.
+across every sister app, so the same 6 patches apply to all of them.
 
 | Region | Package | App name |
 |---|---|---|
@@ -30,6 +30,7 @@ across every sister app, so the same 5 patches apply to all of them.
 | 3 | **Hide banner ads in feed** | Disables the Pubmatic OpenWrap / DFPBanner renderer in the deal feed. Ads never load and the empty gray ad-cell container is collapsed to zero (visibility=GONE + height=0 + all 4 margins=0). Lists look as if ad slots were never inserted. |
 | 4 | **Always show event-theming icons** | Always shows all 4 event-theming icons (Black Friday, Summer Sales, Autumn Sales, El Buen Fin) in the picker, regardless of whether the corresponding event is currently active. Vanilla shows only the icon for the active event (if any) and hides the other 3. Depends on patch #2. |
 | 5 | **Keep event icon after restart** | Disables the use-case that auto-restores the default icon on app start when an event has ended by date. Without this patch, picking SummerSales as your launcher reverts to default on next launch with the *"Our event mode is over!"* dialog. With it, your chosen event icon stays permanently. |
+| 6 | **Fix spacing around hidden ad cells** | Companion to patch #3. Without this, after ad cells collapse to zero height, the deal-detail RecyclerView's ItemDecoration (`m07`) still allocates a 16dp section gap under each invisible ad AND paints a `shadow_divider` on top of the next section's header — producing a doubled 32dp gap and a visually clipped *"You may also like"* subheader. This patch inserts guards in `m07.a()` (`getItemOffsets`) and `m07.b()` (`onDraw`) so collapsed ad cells contribute no offset and no draw. Depends on patch #3. |
 
 ---
 
