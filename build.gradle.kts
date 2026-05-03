@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "app.revanced.patches"
-version = "1.1.1"
+version = "1.2.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
