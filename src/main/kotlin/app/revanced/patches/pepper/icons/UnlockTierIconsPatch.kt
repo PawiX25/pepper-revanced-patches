@@ -36,9 +36,7 @@ import com.android.tools.smali.dexlib2.iface.reference.FieldReference
 @Suppress("unused")
 val unlockTierIconsPatch = bytecodePatch(
     name = "Unlock tier-locked icons",
-    description = "Makes all 12 membership-tier icons (Silver/Gold/Platinum + " +
-        "DealMinded/DealDetective/Chilling/Awesome/Tight/Cool/Mascots) available " +
-        "in the icon picker without having to farm loyalty points.",
+    description = "Unlocks all membership-tier app icons in the icon picker.",
 ) {
     pepperFamilyPackages.forEach { compatibleWith(it) }
 

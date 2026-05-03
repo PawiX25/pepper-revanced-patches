@@ -26,10 +26,7 @@ import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 @Suppress("unused")
 val keepEventIconAfterRestartPatch = bytecodePatch(
     name = "Keep event icon after restart",
-    description = "Disables the use-case that auto-restores the default icon on " +
-        "app start when an event (Black Friday / Summer Sales / etc.) has ended " +
-        "by date. With this patch your chosen event icon stays as the launcher " +
-        "permanently — no \"Our event mode is over!\" dialog on next launch.",
+    description = "Keeps the chosen event-themed app icon after the event ends.",
 ) {
     pepperFamilyPackages.forEach { compatibleWith(it) }
 

@@ -60,12 +60,8 @@ import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 @Suppress("unused")
 val collapseAdSpacingPatch = bytecodePatch(
     name = "Fix spacing around hidden ad cells",
-    description = "Companion fix for the ad-hiding patch. After ad cells " +
-        "collapse to zero height, the deal-detail RecyclerView's ItemDecoration " +
-        "still allocates a 16dp section gap under each (invisible) ad and paints " +
-        "a shadow_divider on top of the next section's header. This patch " +
-        "inserts guards so collapsed ad cells contribute no offset and no draw, " +
-        "restoring the natural single-padding look.",
+    description = "Removes the empty space and shadow divider left behind by " +
+        "hidden banner-ad cells in deal-detail screens.",
 ) {
     pepperFamilyPackages.forEach { compatibleWith(it) }
 
