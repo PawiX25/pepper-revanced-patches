@@ -21,9 +21,8 @@ import app.revanced.patches.pepper.shared.ensureRegisters
 @Suppress("unused")
 val enableDebugMenuPatch = bytecodePatch(
     name = "Enable debug menu",
-    description = "Re-enables the hidden 3-dot debug menu in MainActivity " +
-        "(45 debug actions: ad inspector, exploration screens, navigation, " +
-        "consent reset, event theming, monetization, etc.).",
+    description = "Re-enables the hidden debug menu in the main activity.",
+    use = false,
 ) {
     pepperFamilyPackages.forEach { compatibleWith(it) }
 

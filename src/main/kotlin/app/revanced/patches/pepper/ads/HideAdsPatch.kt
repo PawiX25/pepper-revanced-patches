@@ -28,16 +28,13 @@ import com.android.tools.smali.dexlib2.iface.reference.FieldReference
  *     margins around a GONE item, leaving a visible gap between deal cards.
  *   - Re-applies LayoutParams.
  *
- * The original 398-line method body (POBBannerView creation + listener attach +
- * loadAd) is wholesale removed via removeInstructions(0, count).
+ * The original method body (POBBannerView creation + listener attach +
+ * loadAd) is removed in full via removeInstructions(0, count).
  */
 @Suppress("unused")
 val hideBannerAdsPatch = bytecodePatch(
     name = "Hide banner ads in feed",
-    description = "Disables the banner-ad renderer (Pubmatic OpenWrap / DFPBanner) " +
-        "in the deal feed. Banner ads never load and the empty gray ad-cell " +
-        "container is collapsed to zero height. Lists look as if ad slots were " +
-        "never inserted.",
+    description = "Removes the banner ads in the deal feed.",
 ) {
     pepperFamilyPackages.forEach { compatibleWith(it) }
 

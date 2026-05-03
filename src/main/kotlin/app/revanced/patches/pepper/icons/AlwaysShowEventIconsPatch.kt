@@ -27,10 +27,8 @@ import com.android.tools.smali.dexlib2.iface.reference.FieldReference
 @Suppress("unused")
 val alwaysShowEventIconsPatch = bytecodePatch(
     name = "Always show event-theming icons",
-    description = "Always show all 4 event-theming icons (Black Friday, Summer " +
-        "Sales, Autumn Sales, El Buen Fin) in the icon picker, regardless of " +
-        "whether the corresponding event is currently active. Vanilla shows only " +
-        "the icon for the active event (if any) and hides the other 3.",
+    description = "Shows every event-themed app icon in the picker, even when " +
+        "its event is not currently active.",
 ) {
     pepperFamilyPackages.forEach { compatibleWith(it) }
 

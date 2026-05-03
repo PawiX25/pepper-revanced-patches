@@ -17,55 +17,32 @@ import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 /**
  * Fix spacing around hidden ad cells in deal-detail RecyclerView
  *
- * Companion fix for `hideBannerAdsPatch`. When the ad cells are collapsed to
- * `height=0` + zero margins (patch #3), the section ItemDecoration `m07` still
- * adds a 16dp bottom offset under each ad AND paints a 16dp `shadow_divider`
- * drawable on top of the next view's first 16dp. Visible symptoms in vanilla
- * #3:
- *   1. Doubled gap between sections (≈32dp/84px instead of the natural 16dp/42px),
- *      because both the section before the ad AND the (collapsed) ad each contribute
- *      a 16dp bottom offset.
- *   2. The "You may also like" subheader gets visually cut off — the
- *      shadow_divider painted at the (zero-height) ad's bottom Y overlaps the
- *      `row_suggestions_with_title` row's 16dp `marginTop` on its subheader text.
- *
- * Why m07 still does this work even though the ad is GONE: `getItemOffsets`
- * and `onDraw` of an `ItemDecoration` run for every adapter position regardless
- * of the underlying view's visibility. RecyclerView.ItemDecoration is independent
- * of view visibility.
+ * Companion fix for [hideBannerAdsPatch]. When ad cells are collapsed to
+ * `height=0` + zero margins, the section ItemDecoration `m07` still adds a
+ * bottom offset under each ad AND paints a `shadow_divider` drawable on top
+ * of the next view — RecyclerView ItemDecoration runs for every adapter
+ * position regardless of view visibility. Result: doubled section gap and a
+ * shadow line clipping the next subheader.
  *
  * Patch: insert two compact guards into m07.
  *
- *   • `getItemOffsets` (a()): right after `currentType = adapter.getItemViewType(pos)`
- *     is loaded, if currentType matches small_ad / medium_ad / large_ad,
- *     write `Rect.set(0, 0, 0, 0)` and return. Skips the offset entirely for
- *     collapsed ad cells.
+ *   • `getItemOffsets` (a()): if the row's view type matches small_ad /
+ *     medium_ad / large_ad, write `Rect.set(0, 0, 0, 0)` and return. Skips
+ *     the offset entirely for collapsed ad cells.
  *
- *   • `onDraw` (b()): inside the per-item iteration, right after the same
- *     currentType lookup, if it's an ad type, branch to the existing "skip
- *     this item" target (`:cond_2` — what the original uses when the view at
- *     this position is null). Skips both the shadow_divider drawable.draw()
- *     and the colored-rect painting for ad rows.
+ *   • `onDraw` (b()): inside the per-item iteration, if the type is an ad,
+ *     branch to the existing "skip this item" target. Skips both the
+ *     shadow_divider draw and the colored-rect paint for ad rows.
  *
- * Net effect after patches #3 + this: the deal-detail page renders exactly as
- * if the ad slots had never existed — single 16dp section gap, no shadow over
- * the next subheader.
- *
- * Resource IDs are configurable per package (each Pepper variant has its own
- * `R.id.adapter_delegate_view_type_*_ad`, but in the v8.12.00 codebase used
- * by all 10 sister apps the IDs we ship as defaults are correct for Pepper PL;
- * other variants may need to override via patch options if the ID space shifts
- * between regional builds).
+ * Resource IDs are configurable per package — each Pepper variant has its
+ * own `R.id.adapter_delegate_view_type_*_ad`. Defaults match Pepper PL; if
+ * a regional build shifts the ID space, override via patch options.
  */
 @Suppress("unused")
 val collapseAdSpacingPatch = bytecodePatch(
     name = "Fix spacing around hidden ad cells",
-    description = "Companion fix for the ad-hiding patch. After ad cells " +
-        "collapse to zero height, the deal-detail RecyclerView's ItemDecoration " +
-        "still allocates a 16dp section gap under each (invisible) ad and paints " +
-        "a shadow_divider on top of the next section's header. This patch " +
-        "inserts guards so collapsed ad cells contribute no offset and no draw, " +
-        "restoring the natural single-padding look.",
+    description = "Removes the empty space and shadow divider left behind by " +
+        "hidden banner-ad cells in deal-detail screens.",
 ) {
     pepperFamilyPackages.forEach { compatibleWith(it) }
 

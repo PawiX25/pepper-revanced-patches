@@ -2,10 +2,8 @@ package app.revanced.patches.pepper.shared
 
 /**
  * All Pepper.com Group / TippingCanoe sister apps that share the same
- * obfuscated codebase as Pepper PL 8.12.00. Verified at this version: every
- * fingerprint string ("liveramp.com", "custom_app_icon_tier1_default",
- * "custom_app_icon_event_theming_black_friday", MainActivity class name)
- * matches identically across all of them.
+ * obfuscated codebase. Every fingerprint string and class name used by
+ * the patches in this module matches identically across the family.
  */
 internal val pepperFamilyPackages = arrayOf(
     "com.tippingcanoe.pepperpl",       // Pepper PL
@@ -16,6 +14,6 @@ internal val pepperFamilyPackages = arrayOf(
     "com.chollometro",                 // Chollometros (ES)
     "com.dealabs.apps.android",        // Dealabs (FR)
     "com.preisjaeger",                 // Preisjäger (AT)
-    "com.pepperdeals",                 // Pepper.com (US/global)
+    "com.pepperdeals",                 // Pepper.com (US)
     "se.pepperdeals",                  // Pepper SE
 )
