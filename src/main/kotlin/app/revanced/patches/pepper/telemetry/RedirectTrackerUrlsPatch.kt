@@ -65,11 +65,15 @@ val redirectTrackerUrlsPatch = bytecodePatch(
         // Iterable
         "https://api.iterable.com/api/" to "https://127.0.0.1:1/api/",
 
-        // Usercentrics tracking-only endpoints (NOT the CMP — those are kept).
+        // Usercentrics — empirically verified that the app falls back to "reject all"
+        // when these are unreachable, so we cut every host (tracking + CMP-core).
         "https://app.eu.usercentrics.eu/session/1px.png" to "https://127.0.0.1:1/1px.png",
         "https://app.usercentrics.eu/session/1px.png" to "https://127.0.0.1:1/1px.png",
         "https://uct.eu.usercentrics.eu" to "https://127.0.0.1:1",
         "https://uct.service.usercentrics.eu" to "https://127.0.0.1:1",
+        "https://aggregator.service.usercentrics.eu" to "https://127.0.0.1:1",
+        "https://api.usercentrics.eu" to "https://127.0.0.1:1",
+        "https://consent-api.service.consent.usercentrics.eu" to "https://127.0.0.1:1",
 
         // Adjust BASE_URLs
         "https://app.adjust.com" to "https://127.0.0.1:1",

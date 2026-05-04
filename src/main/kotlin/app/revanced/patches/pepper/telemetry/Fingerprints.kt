@@ -30,3 +30,17 @@ internal val pepperHardwareIdInterceptorFingerprint = fingerprint {
     strings("Pepper-Hardware-Id")
     custom { method, _ -> method.name == "intercept" }
 }
+
+/**
+ * The single static converter `(state) → AppStartProcessRequiredSteps` that
+ * the AppStartProcess navigator funnels every nav-decision through. Return
+ * type is Pepper-package (non-obfuscated) and unique across the entire APK,
+ * so matching purely on `returns(...)` + 1 ref parameter is unambiguous.
+ */
+internal val appStartRequiredStepsConverterFingerprint = fingerprint {
+    accessFlags(AccessFlags.PUBLIC, AccessFlags.STATIC, AccessFlags.FINAL)
+    returns(
+        "Lcom/pepper/presentation/appstartprocess/AppStartProcessRequiredSteps;",
+    )
+    custom { method, _ -> method.parameterTypes.size == 1 }
+}
