@@ -98,8 +98,6 @@ private fun XmlEditor.compactDealCard() {
     ).forEach { id ->
         update(id) {
             setAndroid("minHeight", "40.0dip")
-            setAndroid("insetTop", "0.0dip")
-            setAndroid("insetBottom", "0.0dip")
             removeApp("layout_constraintBaseline_toBaselineOf")
         }
     }
@@ -142,9 +140,13 @@ private fun XmlEditor.compactPlaceholderBody() {
         setAndroid("layout_width", "80.0dip")
     }
     update("deal_thread_placeholder_button_get_deal") {
-        setAndroid("layout_height", "40.0dip")
-        setAndroid("layout_marginTop", "@dimen/spacing_extra_small")
-        setAndroid("layout_marginBottom", "@dimen/spacing_extra_small")
+        // Real Material3 Button has insetTop/insetBottom=6dp by default — visible
+        // orange area is 40-12=28dp. Skeleton must match the visible area, not
+        // the View bounds, so the gray bar maps onto the real button's coloured
+        // surface (not the invisible touch-target inset).
+        setAndroid("layout_height", "28.0dip")
+        setAndroid("layout_marginTop", "10.0dip")
+        setAndroid("layout_marginBottom", "10.0dip")
     }
     update("deal_thread_placeholder_comment_and_share") {
         size("48.0dip", "32.0dip")
