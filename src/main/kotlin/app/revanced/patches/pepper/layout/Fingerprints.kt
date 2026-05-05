@@ -2,7 +2,6 @@ package app.revanced.patches.pepper.layout
 
 import app.revanced.patcher.fingerprint
 import com.android.tools.smali.dexlib2.AccessFlags
-import com.android.tools.smali.dexlib2.Opcode
 import com.android.tools.smali.dexlib2.iface.instruction.NarrowLiteralInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 import com.android.tools.smali.dexlib2.iface.reference.MethodReference
@@ -148,40 +147,5 @@ internal val itemDecorationOnDrawFingerprint = fingerprint {
                 ref.returnType == "Z"
         }
         callsDrawableDraw && callsGetChildAt && callsOwnE && callsOwnD
-    }
-}
-
-/**
- * Deal-thread card ViewHolder constructor (`j6c.<init>(View)` in Pepper PL
- * v8.13.00). It binds every view inside `item_deal_thread_card`.
- *
- * This is the narrowest safe hook for runtime layout changes: the card XML is
- * already inflated, every target view is non-null and stored on the holder,
- * and sponsored deal cards reuse the same holder through their wrapper.
- */
-internal val dealCardViewHolderConstructorFingerprint = fingerprint {
-    returns("V")
-    parameters("Landroid/view/View;")
-    custom { method, _ ->
-        if (method.name != "<init>") return@custom false
-        val impl = method.implementation ?: return@custom false
-        val literals = impl.instructions
-            .filterIsInstance<NarrowLiteralInstruction>()
-            .map { it.narrowLiteral }
-            .toSet()
-        val hasTargetIds = listOf(
-            0x7f0a01a6, // deal_thread_button_get_deal
-            0x7f0a01a7, // deal_thread_button_get_deal_outlined
-            0x7f0a01a8, // deal_thread_button_get_deal_small
-            0x7f0a01c7, // deal_thread_text_temperature
-            0x7f0a0611, // thread_button_comment_count
-            0x7f0a0630, // thread_image
-        ).all(literals::contains)
-        val callsFindViewById = impl.instructions.any { instruction ->
-            instruction.opcode == Opcode.INVOKE_VIRTUAL &&
-                (instruction as? ReferenceInstruction)?.reference?.toString() ==
-                    "Landroid/view/View;->findViewById(I)Landroid/view/View;"
-        }
-        hasTargetIds && callsFindViewById
     }
 }
