@@ -1,5 +1,7 @@
 # Pepper ReVanced Patches
 
+> 📦 **Also available for Morphe** → [pepper-morphe-patches](https://github.com/PawiX25/pepper-morphe-patches) — same patch set, ported to the [Morphe Patcher](https://github.com/MorpheApp/morphe-patcher) framework for use with [Morphe Manager](https://github.com/MorpheApp/morphe-manager).
+
 Unofficial [ReVanced](https://revanced.app/) patch bundle for the entire
 **Pepper.com Group / TippingCanoe** family of regional deal-aggregator apps.
 
